@@ -1,10 +1,11 @@
+#This script collects the style, tempo, and popularity (+more) of an artist using Spotify's Python API 
+
+#import libraries 
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
 import time 
 import numpy as np 
-
-#This script collects the style, tempo, and popularity (+more) of the artist using Spotify's Python API 
 
 #client information 
 client_id = 'xxxx
@@ -12,11 +13,11 @@ client_secret = 'xxxx'
 client_credentials_manager = SpotifyClientCredentials(client_id, client_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-#i. artist playlist -------
+#i. artist playlist 
 met1=sp.user_playlist('Spotify','37i9dQZF1DZ06evO3ALAcw')
+ids=[]
 
 #get names of playlist 
-ids=[]
 for i in met1['tracks']['items']:
     track=i['track']
     ids.append(track['id'])
@@ -28,15 +29,13 @@ features=sp.audio_features(ids[0])
 #key values 
 for key in meta.keys():
     print(key)
-
 name=meta['name']
 album=meta['album']['name']
 artist=meta['album']['artists'][0]['name']
 rel_date=meta['album']['release_date']
-
 avail_mrkts=meta['available_markets']
 
-#ii. loop through playlist --------
+#ii. loop through each playlist 
 def get_playlist(user,playlist_id):
     ids=[]
     playlist=sp.user_playlist(user,playlist_id)
@@ -44,14 +43,12 @@ def get_playlist(user,playlist_id):
         track=item['track']
         ids.append(track['id'])
     return ids 
-
 ids=get_playlist('this is parov stelar','37i9dQZF1DZ06evO3ALAcw')
 
 #get song features 
 def getTrackFeatures(id):
       meta = sp.track(id)
       features = sp.audio_features(id)
-
       # Meta
       name = meta['name']
       album = meta['album']['name']
@@ -59,7 +56,6 @@ def getTrackFeatures(id):
       release_date = meta['album']['release_date']
       length = meta['duration_ms']
       popularity = meta['popularity']
-
       # Features
       acousticness = features[0]['acousticness']
       danceability = features[0]['danceability']
@@ -70,7 +66,6 @@ def getTrackFeatures(id):
       speechiness = features[0]['speechiness']
       tempo = features[0]['tempo']
       time_signature = features[0]['time_signature']
-
       track = [name, album, artist, release_date, length, popularity, danceability, acousticness, danceability, energy, instrumentalness, liveness, loudness, speechiness, tempo, time_signature]
       return track
 
@@ -83,7 +78,7 @@ for i in range(0, 5):
 df = pd.DataFrame(tracks, columns = ['name', 'album', 'artist', 'release_date', 'length', 'popularity', 'danceability', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'time_signature'])
     
 
-#iii. artist comparisosn (i.e. similar artists, genres, popularity)-----------
+#iii. artist comparisosn (i.e. similar artists, genres, popularity)
 birdy_uri = 'spotify:artist:5gCRApTajqwbnHHPbr2Fpi'
 results=sp.artist_albums(birdy_uri,album_type='album')
 albums=results['items']
